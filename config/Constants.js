@@ -1,4 +1,4 @@
-const baseUrl = 'https://srs-original-server.onrender.com'
+const baseUrl = 'localhost:5000'
 
 const Constants = {
     baseUrl
