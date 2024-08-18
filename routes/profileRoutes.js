@@ -6,6 +6,7 @@ const {
     profileHome,
     getProfiles,
     addProfile,
+    getUserProfile,
     getProfile,
     updateProfile,
     deleteProfile,
@@ -31,6 +32,7 @@ const { profilePicUpload,
 router.route('/').get(protect, profileHome)
 router.route('/profiles').get(protect, getProfiles)
 router.route('/profiles').post(protect, addProfile)
+router.route('/profiles/user-profile').post(protect,getUserProfile)
 router.route('/profiles/:id').get(protect, getProfile)
 router.route('/profiles/:id').patch(protect,updateProfile)
 router.route('/profiles/:id').delete(protect, deleteProfile)

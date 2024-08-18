@@ -2,10 +2,15 @@ const path = require('path')
 const fs =require('fs')
 const asyncHandler = require('express-async-handler')
 
+// models
 const profileModel = require('../models/profileModel')
 const interestModel = require('../models/interestModel')
 const paymentModel = require('../models/paymentModel')
 const { baseUrl } = require('../config/Constants')
+
+// utils
+const existFile = require('../utils/existFile')
+
 
 const profileHome = asyncHandler(async (req, res) => {
 
@@ -64,10 +69,187 @@ const addProfile = asyncHandler(async(req, res) => {
 
 })
 
+const getUserProfile = asyncHandler(async (req, res) => {
+    
+    const { email } = req.body
+    // access profile with specific email
+    const currentUserProfile = await profileModel.findOne({ email })
+
+    if (currentUserProfile) {
+        
+
+        // check for the existance of profilePic in storage
+        const currentProfilePic = currentUserProfile.profilePic
+        const { id } = currentUserProfile
+    
+
+        if (currentProfilePic) {
+        
+            const currentProfilePicName = currentProfilePic.match(/\/([^\/?#]+)[^\/]*$/)
+            const currentProfilePicPath = path.resolve(__dirname, '../storage/images', currentProfilePicName[1])
+        
+            // findout the status of the file existence 
+            const existStatus = existFile(currentProfilePicPath)
+
+            // remode database entry if file is not existing
+            if (!existStatus) {
+            
+                currentUserProfile.profilePic = ""
+                await profileModel.findByIdAndUpdate(id, currentUserProfile)
+
+            }
+        
+
+        }
+
+        // check for the existance of image1 in storage
+        const currentImage1 = currentUserProfile.image1
+
+        if (currentImage1) {
+        
+            const currentImage1Name = currentImage1.match(/\/([^\/?#]+)[^\/]*$/)
+            const currentImage1Path = path.resolve(__dirname, '../storage/images', currentImage1Name[1])
+
+        
+            // findout the status of the file existence 
+            const existStatus = existFile(currentImage1Path)
+
+            // remode database entry if file is not existing
+            if (!existStatus) {
+            
+                currentUserProfile.image1 = ""
+                await profileModel.findByIdAndUpdate(id, currentUserProfile)
+
+            }
+        
+
+        }
+
+        // check for the existance of image2 in storage
+        const currentImage2 = currentUserProfile.image2
+
+        if (currentImage2) {
+        
+            const currentImage2Name = currentImage1.match(/\/([^\/?#]+)[^\/]*$/)
+            const currentImage2Path = path.resolve(__dirname, '../storage/images', currentImage2Name[1])
+
+        
+            // findout the status of the file existence 
+            const existStatus = existFile(currentImage2Path)
+
+            // remode database entry if file is not existing
+            if (!existStatus) {
+            
+                currentUserProfile.image2 = ""
+                await profileModel.findByIdAndUpdate(id, currentUserProfile)
+
+            }
+        
+
+        }
+  
+    }
+    
+
+    // find the user profile agaian
+    
+    const userProfile = await profileModel.findOne({ email })
+
+
+    // check specified user profile exists or not
+    if (userProfile) {
+        res.status(200).json(userProfile)
+    }
+    else {
+        res.status(404)
+        throw new Error('Profile Does not Exist')
+    }
+    
+    // res.status(200).json({ message: "success" })
+
+})
+
 const getProfile = asyncHandler(async (req, res) => {
     const { id } = req.params
     
     // access the profile with specified profile id
+    const currentProfile = await profileModel.findById(id)
+
+    if (currentProfile) {
+        
+
+        // check for the existance of profilePic in storage
+        const currentProfilePic = currentProfile.profilePic
+        const { id } = currentProfile
+    
+
+        if (currentProfilePic) {
+        
+            const currentProfilePicName = currentProfilePic.match(/\/([^\/?#]+)[^\/]*$/)
+            const currentProfilePicPath = path.resolve(__dirname, '../storage/images', currentProfilePicName[1])
+        
+            // findout the status of the file existence 
+            const existStatus = existFile(currentProfilePicPath)
+
+            // remode database entry if file is not existing
+            if (!existStatus) {
+            
+                currentProfile.profilePic = ""
+                await profileModel.findByIdAndUpdate(id, currentProfile)
+
+            }
+        
+
+        }
+
+        // check for the existance of image1 in storage
+        const currentImage1 = currentProfile.image1
+
+        if (currentImage1) {
+        
+            const currentImage1Name = currentImage1.match(/\/([^\/?#]+)[^\/]*$/)
+            const currentImage1Path = path.resolve(__dirname, '../storage/images', currentImage1Name[1])
+
+        
+            // findout the status of the file existence 
+            const existStatus = existFile(currentImage1Path)
+
+            // remode database entry if file is not existing
+            if (!existStatus) {
+            
+                currentProfile.image1 = ""
+                await profileModel.findByIdAndUpdate(id, currentProfile)
+
+            }
+        
+
+        }
+
+        // check for the existance of image2 in storage
+        const currentImage2 = currentProfile.image2
+
+        if (currentImage2) {
+        
+            const currentImage2Name = currentImage1.match(/\/([^\/?#]+)[^\/]*$/)
+            const currentImage2Path = path.resolve(__dirname, '../storage/images', currentImage2Name[1])
+
+        
+            // findout the status of the file existence 
+            const existStatus = existFile(currentImage2Path)
+
+            // remode database entry if file is not existing
+            if (!existStatus) {
+            
+                currentProfile.image2 = ""
+                await profileModel.findByIdAndUpdate(id, currentProfile)
+
+            }
+        
+
+        }
+  
+    }
+    
     const profile = await profileModel.findById(id)
 
     // check specified user profile exists or not
@@ -676,6 +858,7 @@ module.exports = {
     profileHome,
     getProfiles,
     addProfile,
+    getUserProfile,
     getProfile,
     updateProfile,
     deleteProfile,
